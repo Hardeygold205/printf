@@ -2,47 +2,64 @@
 #include <stdarg.h>
 
 /**
- * _printf - Produces output according to a format
- * @format: Is a character string.
+ * _printf - Custom printf function with limited format specifiers
+ * @format: The format string containing the text and format specifiers
+ * @...: Additional arguments corresponding to format specifiers
  *
- * Return: The number of chars printed (excluding
- * he null byte used to end output to strings)
+ * Return: The total number of characters printed
  */
 
 int _printf(const char *format, ...)
 {
-	int size;
-	va_list args;
+int j = 0; 
+int len_ofchar = 0;
+va_list args_list;
 
-	if (format == NULL)
-		return (-1);
+va_start(args_list, format); 
 
-	size = _strlen(format);
-	if (size <= 0)
-		return (0);
+while (format[j] != '\0')
+{
+char _char = format[j];
 
-	va_start(args, format);
+if (_char != '%')
+{
+_putchar(_char); 
+len_ofchar++;
+}
+else
+{
+j++;
 
-	size = handler(format, args);
-	_putchar(-1);
+if (format[j] == '\0')
+break;
 
-	va_end(args);
-	return (size);
+if (format[j] == 'c')
+{
+int c = va_arg(args_list, int);
+_putchar(c);
+len_ofchar++;
+}
+else if (format[j] == 's')
+{
+const char *s = va_arg(args_list, const char *);
+len_ofchar += _printstr_len(s); 
+}
+else if (format[j] == 'd' || format[j] == 'i')
+{
+int num = va_arg(args_list, int);
+len_ofchar += negative_int(num); 
+}
+            
+else
+{
+_putchar('%');
+_putchar(format[j]);
+len_ofchar += 2;
+}
+}
+j++;
 }
 
-/**
- * _strlen - Calculates the length of a string
- * @str: String par.
- *
- * Return: Length
- **/
-
-int _strlen(const char *str)
-{
-	int b;
-
-	for (b = 0; str[b] != 0; b++)
-		;
-
-	return (b);
+va_end(args_list);
+return len_ofchar;
 }
